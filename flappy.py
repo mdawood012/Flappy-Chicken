@@ -19,7 +19,7 @@ SHEET_COLUMNS = 6
 SHEET_ROWS = 1
 
 # Background constants
-BACKGROUND_URL = "https://img.freepik.com/free-vector/cartoon-fantastic-forest-landscape-nature-panorama-game-liana-covering-grass-landscape-game-vector-illustration_1284-47784.jpg?t=st=1741631334~exp=1741634934~hmac=f70b149e274e7bcf0204eaae274350caf8631f7d01a54618cb678cd0b96b8751&w=1060"
+BACKGROUND_URL = "https://raw.githubusercontent.com/mdawood012/Flappy-Chicken/refs/heads/main/background.png"
 background = simplegui.load_image(BACKGROUND_URL)
 background_scroll = 0
 BACKGROUND_SPEED = 2
