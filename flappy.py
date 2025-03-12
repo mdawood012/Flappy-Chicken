@@ -1,12 +1,15 @@
-import random
+import random, os
 try:
     import simplegui
 except ImportError :
     import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
 
+
+
+
 class Spritesheet:
-    def __init__(self, imgurl, width, height, columns, rows):
-        self.img = simplegui.load_image(imgurl)
+    def __init__(self, img, width, height, columns, rows):
+        self.img = simplegui.load_image(img)
         self.rows = rows
         self.columns = columns
         
@@ -20,8 +23,8 @@ class Spritesheet:
     def draw(self, canvas):
         #self.next_frame()
         source_centre = (
-            self.frame_width * self.frame_index[0] + self.frame_centre_x,
-            self.frame_height * self.frame_index[1] + self.frame_centre_y
+            self.frame_width * self.frame_index[0] + self.frame_centre_x + 1,
+            self.frame_height * self.frame_index[1] + self.frame_centre_y + 1
         )
         source_size = (self.frame_width, self.frame_height)
         dest_centre = (300, 150)
@@ -47,25 +50,28 @@ class Clock:
 def draw(canvas):
     clock.tick()
     sheet.draw(canvas)
-    if clock.transition(10):
+    if clock.transition(5):
         sheet.next_frame()
 
-SHEET_URL = "https://images.freeimages.com/vhq/images/previews/5c5/flapping-chicken-sprite-sheet-102255.png?fmt=webp&h=350"
+
+# imageURL = "http://localhost:8000/chicken.png"
+# you can also open up your own server by running this command :  python -m http.server 8000 
+# then on another terminal you can run the program and that also works!!! but idk think that is 
+# something portable. perhaps we can use rhul server but idk how to do that. 
+
+imageURL = "https://media-hosting.imagekit.io//d248eb0cc6e34f7c/chicken.png?Expires=1836389273&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=yl~aFjJCwcsBNSUaNosFZOYKFVJR9kV4DW1xW5T15VYfGYWh6wrlxM39c0E~lpLF8srGIYEuxy0rkXnPnV-R-K13c2VHnjl2G4c6SpnhKUMuzihhfKy~~EZHBLBtW1ve1px2xmjGDynhWELRutPFeG3CSRKmuX2mvOdEZj59eIFAZpMH0dveBmqc9nrn-PSKtT4BEGHcqGLYHX6-2gXIrB2hKYD5VQm2hnmr56zM7mJqSFqRttPWMczU0mz~HZ-5ROJ5qm6673XqSMQijrSg90m106rBQ4GlxAV0UB0Fgomx841HcKKC31FdcYEKA1eYsVcUxhXss1~7ORplry1W8g__"
 SHEET_WIDTH = 800
 SHEET_HEIGHT = 121
 SHEET_COLUMNS = 6
 SHEET_ROWS = 1
-image = simplegui.load_image("https://images.freeimages.com/vhq/images/previews/5c5/flapping-chicken-sprite-sheet-102255.png?fmt=webp&h=350")
-print(image.get_width())
-print(image.get_height())
-
 
 frame = simplegui.create_frame("Sprite", 600, 300)  
 sheet = Spritesheet(
-    SHEET_URL, SHEET_WIDTH, SHEET_HEIGHT,
+    imageURL, SHEET_WIDTH, SHEET_HEIGHT,
     SHEET_COLUMNS, SHEET_ROWS
 )
 clock = Clock()
 frame.set_draw_handler(draw)
+frame.set_canvas_background("#056482")
 frame.start()
 
