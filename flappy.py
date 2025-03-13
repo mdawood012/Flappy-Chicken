@@ -1,6 +1,8 @@
 import random
 
 from Vector import Vector
+from Bird import Bird
+from Background import Background
 
 try:
     import simplegui
@@ -20,74 +22,9 @@ SHEET_ROWS = 1
 
 # Background constants
 BACKGROUND_URL = "https://raw.githubusercontent.com/mdawood012/Flappy-Chicken/refs/heads/main/background.png"
-background = simplegui.load_image(BACKGROUND_URL)
-background_scroll = 0
+BACKGROUND_WIDTH = 996
+BACKGROUND_HEIGHT = 582
 BACKGROUND_SPEED = 2
-
-
-class Bird:
-    def __init__(self, pos):
-        self.pos = pos
-        self.vel = Vector(0, 0)
-        self.gravity = Vector(0, 0.6)
-        self.jump_strength = Vector(0, -15)
-        self.radius = 40
-
-        self.sheet = simplegui.load_image(SHEET_URL)
-        self.columns = SHEET_COLUMNS
-        self.rows = SHEET_ROWS
-
-        self.frame_width = SHEET_WIDTH / self.columns
-        self.frame_height = SHEET_HEIGHT / self.rows
-        self.frame_centre_x = self.frame_width / 2
-        self.frame_centre_y = self.frame_height / 2
-
-        self.frame_index = [0, 0]
-        self.frame_delay = 5
-        self.frame_counter = 0
-
-    def draw(self, canvas):
-        # animation frame update
-        self.frame_counter += 1
-        if self.frame_counter >= self.frame_delay:
-            self.frame_counter = 0
-            self.next_frame()
-
-        # calculates source center
-        source_centre = (
-            self.frame_width * self.frame_index[0] + self.frame_centre_x + 1,
-            self.frame_height * self.frame_index[1] + self.frame_centre_y + 1
-        )
-        source_size = (self.frame_width, self.frame_height)
-        dest_centre = self.pos.get_p()
-        dest_size = (100, 100)
-
-        # Draws sprite frame
-        canvas.draw_image(
-            self.sheet,
-            source_centre, source_size,
-            dest_centre, dest_size
-        )
-
-    def next_frame(self):
-        # Move to next frame in spritesheet
-        self.frame_index[0] = (self.frame_index[0] + 1) % self.columns
-
-    def update(self, keyboard):
-        if keyboard.just_pressed:
-            self.vel = self.jump_strength.copy()
-            keyboard.just_pressed = False
-
-        self.vel.add(self.gravity)
-        self.pos.add(self.vel)
-
-        if self.pos.y > GROUND_LEVEL:
-            self.pos.y = GROUND_LEVEL
-            self.vel.y = 0
-        if self.pos.y < self.radius:
-            self.pos.y = self.radius
-            self.vel.y = 0
-
 
 class Keyboard:
     def __init__(self):
@@ -106,46 +43,33 @@ class Keyboard:
 
 
 class Interaction:
-    def __init__(self, bird, keyboard):
+    def __init__(self, bird, keyboard, background):
         self.bird = bird
         self.keyboard = keyboard
+        self.background = background
 
     def update(self):
         self.bird.update(self.keyboard)
 
+    def draw(self, canvas):
+        self.update()
+        self.background.update()
+        self.background.draw(canvas)
+        self.bird.draw(canvas)
+
+
 
 kbd = Keyboard()
-bird = Bird(Vector(WIDTH / 2, HEIGHT / 2))
-inter = Interaction(bird, kbd)
+background = Background(BACKGROUND_URL, BACKGROUND_SPEED, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, HEIGHT)
+bird = Bird(
+    SHEET_URL, Vector(WIDTH / 2, HEIGHT / 2), SHEET_COLUMNS, SHEET_ROWS, SHEET_WIDTH, SHEET_HEIGHT, GROUND_LEVEL
+)
 
-
-def draw(canvas):
-    global background_scroll
-
-    # Scroll background
-    background_scroll = (background_scroll + BACKGROUND_SPEED) % background.get_width()
-
-    # first copy of background
-    canvas.draw_image(background,
-                      (background.get_width() / 2, background.get_height() / 2),
-                      (background.get_width(), background.get_height()),
-                      (background.get_width() / 2 - background_scroll, HEIGHT / 2),
-                      (background.get_width(), background.get_height()))
-
-    # second copy to make it continuous
-    canvas.draw_image(background,
-                      (background.get_width() / 2, background.get_height() / 2),
-                      (background.get_width(), background.get_height()),
-                      (background.get_width() * 1.5 - background_scroll, HEIGHT / 2),
-                      (background.get_width(), background.get_height()))
-
-    inter.update()
-    bird.draw(canvas)
-
+inter = Interaction(bird, kbd, background)
 
 frame = simplegui.create_frame("Flappy Chicken", WIDTH, HEIGHT)
 frame.set_canvas_background('#88CCEE')
-frame.set_draw_handler(draw)
+frame.set_draw_handler(inter.draw)
 frame.set_keydown_handler(kbd.keyDown)
 frame.set_keyup_handler(kbd.keyUp)
 frame.start()
