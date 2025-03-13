@@ -3,6 +3,7 @@ import random
 from Vector import Vector
 from Bird import Bird
 from Background import Background
+from Keyboard import Keyboard
 
 try:
     import simplegui
@@ -25,22 +26,6 @@ BACKGROUND_URL = "https://raw.githubusercontent.com/mdawood012/Flappy-Chicken/re
 BACKGROUND_WIDTH = 996
 BACKGROUND_HEIGHT = 582
 BACKGROUND_SPEED = 2
-
-class Keyboard:
-    def __init__(self):
-        self.jump = False
-        self.just_pressed = False
-
-    def keyDown(self, key):
-        if key == simplegui.KEY_MAP['space']:
-            if not self.jump:
-                self.just_pressed = True
-            self.jump = True
-
-    def keyUp(self, key):
-        if key == simplegui.KEY_MAP['space']:
-            self.jump = False
-
 
 class Interaction:
     def __init__(self, bird, keyboard, background):
