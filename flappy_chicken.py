@@ -4,6 +4,7 @@ from Vector import Vector
 from Bird import Bird
 from Background import Background
 from Keyboard import Keyboard
+from PipeManager import PipeManager
 
 try:
     import simplegui
@@ -27,21 +28,68 @@ BACKGROUND_WIDTH = 996
 BACKGROUND_HEIGHT = 582
 BACKGROUND_SPEED = 2
 
+
 class Interaction:
     def __init__(self, bird, keyboard, background):
         self.bird = bird
         self.keyboard = keyboard
         self.background = background
+        self.pipe_manager = PipeManager(WIDTH, HEIGHT, spawn_interval=90, speed=3) # initializes pipe manager
+        self.score = 0
+        self.game_active = True # flag which keep track of game active state
 
     def update(self):
-        self.bird.update(self.keyboard)
+        if self.game_active:
+            # updates bird if game is active
+            self.bird.update(self.keyboard)
+            # updates pipes
+            self.pipe_manager.update()
+
+            # if collision is detected then game state will change
+            if self.pipe_manager.check_collisions(self.bird):
+                self.game_active = False
+
+            # if the bird hits the floor, game state will change
+            if self.bird.pos.y >= GROUND_LEVEL:
+                self.game_active = False
+
+            # checks scoring when a bird passes a pipe. Score will increment
+            self.score += self.pipe_manager.check_score(self.bird)
 
     def draw(self, canvas):
+        # update game state
         self.update()
+
+        # draws background
         self.background.update()
         self.background.draw(canvas)
+
+        # draws pipes
+        self.pipe_manager.draw(canvas)
+
         self.bird.draw(canvas)
 
+        # floor line
+        canvas.draw_line((0, GROUND_LEVEL), (WIDTH, GROUND_LEVEL), 2, "Brown")
+        # score counter
+        canvas.draw_text(f"Score: {self.score}", (20, 40), 30, "White")
+
+        # death message when game state is flipped
+        if not self.game_active:
+            canvas.draw_text("Game Over", (WIDTH / 2 - 100, HEIGHT / 2), 50, "Red")
+            canvas.draw_text("Press space to restart", (WIDTH / 2 - 120, HEIGHT / 2 + 50), 30, "White")
+
+            # if keyboard is pressed the game will restart
+            if self.keyboard.just_pressed:
+                self.restart_game()
+
+    def restart_game(self):
+        self.bird.pos = Vector(WIDTH / 2, HEIGHT / 2)
+        self.bird.vel = Vector(0, 0)
+        self.pipe_manager = PipeManager(WIDTH, HEIGHT, spawn_interval=90, speed=3)
+        self.score = 0
+        self.game_active = True
+        self.keyboard.just_pressed = False
 
 
 kbd = Keyboard()
