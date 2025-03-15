@@ -12,7 +12,7 @@ class Bird:
         self.img = simplegui.load_image(imgurl)
         self.vel = Vector(0, 0)
         self.gravity = Vector(0, 0.6)
-        self.jump_strength = Vector(0, -15)
+        self.jump_strength = Vector(0, -10)
         self.radius = 40
 
         self.columns = columns
