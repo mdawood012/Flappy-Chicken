@@ -12,7 +12,6 @@ class Keyboard:
             if not self.jump:
                 self.just_pressed = True
             self.jump = True
-
     def keyUp(self, key):
         if key == simplegui.KEY_MAP['space']:
             self.jump = False
