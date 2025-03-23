@@ -15,7 +15,7 @@ class Powerups:
         self.width = width
         self.height = height
         self.pos = Vector(random.randint(200, 600), 10)
-        self.vel = Vector(0.40, 1)
+        self.vel = Vector(0.10, 1)
         self.collision = False
         self.checker = self.pos.x < self.width//2
     def update(self):
