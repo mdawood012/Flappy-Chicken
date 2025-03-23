@@ -6,8 +6,10 @@ except ImportError:
     import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
 
 from Vector import Vector
+
+
 class Bird:
-    def __init__(self, imgurl, pos, columns, rows, obj_width, obj_height, ground_level):
+    def __init__(self, imgurl, heart_url, empty_url, heart_dims, pos, columns, rows, obj_width, obj_height, ground_level):
         self.pos = pos
         self.img = simplegui.load_image(imgurl)
         self.vel = Vector(0, 0)
@@ -29,6 +31,13 @@ class Bird:
         self.frame_delay = 5
         self.frame_counter = 0
 
+        # for the lives in immunity powerup
+        self.heart_image = simplegui.load_image(heart_url)
+        self.empty_heart_image = simplegui.load_image(empty_url)
+        self.heart_dims = heart_dims
+        self.has_immunity = False
+        self.health = 0
+        self.max_health = 3
     def draw(self, canvas):
         # animation frame update
         self.frame_counter += 1
@@ -51,7 +60,6 @@ class Bird:
             source_centre, source_size,
             dest_centre, dest_size
         )
-
     def next_frame(self):
         # Move to next frame in spritesheet
         self.frame_index[0] = (self.frame_index[0] + 1) % self.columns
@@ -70,4 +78,19 @@ class Bird:
         if self.pos.y < self.radius:
             self.pos.y = self.radius
             self.vel.y = 0
-
+    def get_hit(self):
+        if self.health > 0:
+            self.health -= 1
+    def hearts(self, canvas):
+        self.heart_dims = (38, 32)  # Set size of heart
+        for heart in range(self.health):  # Assuming self.health is the number of hearts
+            x = 580 + (heart * 40)  
+            y = 20
+            canvas.draw_image(self.heart_image, (self.heart_dims[0] / 2, self.heart_dims[1] / 2), self.heart_dims, (x, y), self.heart_dims)
+    def empty_hearts(self, canvas):
+        self.heart_dims = (38, 32)  # Set size of heart
+        if self.health < self.max_health:
+            for heart in range(self.max_health - self.health):
+                x = 580 + ((self.max_health - heart - 1) * 40)
+                y = 20
+                canvas.draw_image(self.empty_heart_image, (self.heart_dims[0] / 2, self.heart_dims[1] / 2), self.heart_dims, (x, y), self.heart_dims)
