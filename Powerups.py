@@ -6,6 +6,7 @@ try:
 except ImportError:
     import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
     
+CATCH_S = simplegui._load_local_sound('sounds//powerup_sound.ogg')
 
 class Powerups:
     def __init__(self, imgurl, obj_width, obj_height, width, height):
@@ -28,6 +29,7 @@ class Powerups:
             distance = self.pos.copy().subtract(bird.pos).length()
             if distance < (self.height/8):
                 self.collision = True
+                CATCH_S.play()
                 bird.health = 3
     def draw(self, canvas):
         if not self.collision:

@@ -39,6 +39,10 @@ HEART_URL = "https://github.com/clear-code-projects/ZeldaHearts/blob/master/full
 EMPTY_HEART_URL = "https://github.com/clear-code-projects/ZeldaHearts/blob/master/empty_heart.png?raw=true"
 HEART_DIMS = (38, 32)
 
+#Sound
+GAME_OVER_S = simplegui._load_local_sound('sounds//game-over.ogg')
+
+
 class Interaction:
     def __init__(self, bird, keyboard, background):
         self.bird = bird
@@ -70,6 +74,7 @@ class Interaction:
                     self.bird.get_hit()
                     self.collision_processed = True
                 if self.bird.health <= 0:
+                    GAME_OVER_S.play()
                     self.game_state = "over"
                     self.background.set_final_score(self.score)
             elif not self.pipe_manager.check_collisions(self.bird):
@@ -77,6 +82,7 @@ class Interaction:
 
             # if the bird hits the floor, game state will change
             if self.bird.pos.y >= GROUND_LEVEL:
+                GAME_OVER_S.play()
                 self.game_state = "over"
                 self.background.set_final_score(self.score)
 
