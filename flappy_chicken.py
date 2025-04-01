@@ -7,6 +7,7 @@ from Keyboard import Keyboard
 from Powerups import Powerups
 from PipeManager import PipeManager
 from Button import Button
+from Pipes import Pipes  # to access golden_counter
 
 try:
     import simplegui
@@ -39,35 +40,27 @@ HEART_URL = "https://github.com/clear-code-projects/ZeldaHearts/blob/master/full
 EMPTY_HEART_URL = "https://github.com/clear-code-projects/ZeldaHearts/blob/master/empty_heart.png?raw=true"
 HEART_DIMS = (38, 32)
 
-#Sound
+# Sound
 GAME_OVER_S = simplegui._load_local_sound('sounds//game-over.ogg')
-
 
 class Interaction:
     def __init__(self, bird, keyboard, background):
         self.bird = bird
         self.keyboard = keyboard
         self.background = background
-        self.pipe_manager = PipeManager(WIDTH, HEIGHT, spawn_interval=90, speed=3) # initializes pipe manager
+        self.pipe_manager = PipeManager(WIDTH, HEIGHT, spawn_interval=90, speed=3)
         self.score = 0
-        self.game_state = "start" # variable which tracks what mode of game were in
+        self.game_state = "start"
         self.counter = 0
         self.powerups_list = []
         self.check_list = []
-        self.collision_processed = False #ensures that health is decreased by only 1 every time. 
+        self.collision_processed = False
+        self.high_score = 0
+
     def update(self):
-        # if game is in "play"
         if self.game_state == "play":
-
-            # updates bird
             self.bird.update(self.keyboard)
-            # updates pipes
             self.pipe_manager.update()
-
-
-            # if collision is detected then game state will change
-
-            #check if bird has collided with pipe and if health is still greater than 0. 
 
             if self.pipe_manager.check_collisions(self.bird) and not self.collision_processed:
                 if self.bird.health > 0:
@@ -76,17 +69,20 @@ class Interaction:
                 if self.bird.health <= 0:
                     GAME_OVER_S.play()
                     self.game_state = "over"
+                    if self.score > self.high_score:
+                        self.high_score = self.score
                     self.background.set_final_score(self.score)
+                    self.background.set_high_score(self.high_score)
             elif not self.pipe_manager.check_collisions(self.bird):
                 self.collision_processed = False
 
-            # if the bird hits the floor, game state will change
             if self.bird.pos.y >= GROUND_LEVEL:
                 GAME_OVER_S.play()
                 self.game_state = "over"
+                if self.score > self.high_score:
+                    self.high_score = self.score
                 self.background.set_final_score(self.score)
-
-            #methods to add and remove the powerups
+                self.background.set_high_score(self.high_score)
 
             self.add_powerups()
             for powerup in self.powerups_list:
@@ -96,40 +92,34 @@ class Interaction:
                     self.bird.has_immunity = True
                     self.powerups_list.remove(powerup)
                     self.check_list.append(powerup)
-            # ensures we only check each powerup only once and doesnt create a large list of powerups. 
 
             if self.bird.has_immunity and not self.pipe_manager.check_collisions(self.bird):
                 self.score += self.pipe_manager.check_score(self.bird)
             elif not self.bird.has_immunity:
                 self.score += self.pipe_manager.check_score(self.bird)
-            #only modidies score depending on having immunity and not collide or not immunity and not collide. 
 
     def add_powerups(self):
-        #reduce overuse powerups
         if (self.counter % 1000 == 0):
             powerup = Powerups(IMMUNITY_URL, IMMUNITY_WIDTH, IMMUNITY_HEIGHT, WIDTH, HEIGHT)
             self.powerups_list.append(powerup)     
-        self.counter+=1
+        self.counter += 1
 
     def draw(self, canvas):
         self.update()
-
-        # draws background
         if self.game_state == "play":
             self.background.update()
         self.background.draw(canvas, self.game_state)
 
-        # draws pipes
-        if self.game_state == "play": #pipes/bird and score only drawn when game in play
+        if self.game_state == "play":
             self.pipe_manager.draw(canvas)
             self.bird.draw(canvas)
-            self.bird.hearts(canvas) #draw hearts
-            self.bird.empty_hearts(canvas) #draw empty hearts
+            self.bird.hearts(canvas)
+            self.bird.empty_hearts(canvas)
             for powerup in self.powerups_list:
                 powerup.draw(canvas)
-            # score counter
             canvas.draw_text(f"Score: {self.score}", (20, 40), 30, "Black")
 
+        # ✅ removed high score drawing from here
 
     def restart_game(self):
         self.bird.pos = Vector(WIDTH / 3, HEIGHT / 2)
@@ -139,19 +129,18 @@ class Interaction:
         self.score = 0
         self.powerups_list = []
         self.check_list = []
-        self.bird.has_immunity = False 
+        self.bird.has_immunity = False
         self.collision_processed = False
-  
-#handles mouse button clicks
+        Pipes.golden_counter = 0  # reset golden pipe cycle
+
+
 def mouse_handler(position):
     global inter
-
     if inter.background.start_button.is_clicked(position):
         inter.game_state = "play"
     if inter.background.restart_button.is_clicked(position):
         inter.game_state = "play"
         inter.restart_game()
-    
 
 kbd = Keyboard()
 background = Background(BACKGROUND_URL, BACKGROUND_SPEED, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, HEIGHT)
@@ -169,4 +158,3 @@ frame.set_keydown_handler(kbd.keyDown)
 frame.set_keyup_handler(kbd.keyUp)
 frame.set_mouseclick_handler(mouse_handler)
 frame.start()
-
