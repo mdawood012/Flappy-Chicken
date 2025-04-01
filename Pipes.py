@@ -6,6 +6,11 @@ try:
 except ImportError:
     import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
 
+PIPE_URL = "https://github.com/mdawood012/Flappy-Chicken/blob/main/pipe.png"
+PIPE_TOP_URL = "https://github.com/mdawood012/Flappy-Chicken/blob/main/pipe_top.png"
+GOLD_PIPE_URL = "https://github.com/mdawood012/Flappy-Chicken/blob/main/gold_pipe.png"
+GOLD_PIPE_TOP_URL = "https://github.com/mdawood012/Flappy-Chicken/blob/main/gold_pipe_top.png"
+
 # handles spawning a single pipe pair
 class Pipes:
     golden_counter = 0  # golden pipe tracker
@@ -24,14 +29,14 @@ class Pipes:
         self.set_random_gap()
 
         # Pipe images
-        self.pipe_bottom_img = simplegui._load_local_image('pipe.png')
-        self.pipe_top_img = simplegui._load_local_image('pipe_top.png')
+        self.pipe_bottom_img = simplegui._load_local_image(PIPE_URL)
+        self.pipe_top_img = simplegui._load_local_image(PIPE_TOP_URL)
         self.pipe_img_width = 720
         self.pipe_img_height = 752
 
         # Golden pipe images
-        self.gold_pipe_bottom_img = simplegui._load_local_image('gold_pipe.png')  # golden image
-        self.gold_pipe_top_img = simplegui._load_local_image('gold_pipe_top.png')  # golden image
+        self.gold_pipe_bottom_img = simplegui._load_local_image(GOLD_PIPE_URL)  # golden image
+        self.gold_pipe_top_img = simplegui._load_local_image(GOLD_PIPE_TOP_URL)  # golden image
 
         Pipes.golden_counter += 1
         self.is_golden = Pipes.golden_counter % 20 == 0  # every 20th pipe
