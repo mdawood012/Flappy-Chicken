@@ -1,7 +1,7 @@
 from Pipes import Pipes
 import random
-# handles spawning multiple pipes
 
+# handles spawning multiple pipes
 class PipeManager:
     def __init__(self, width, height, spawn_interval=90, speed=3):
         self.width = width
@@ -39,15 +39,15 @@ class PipeManager:
             pipe.draw(canvas)
 
     def check_collisions(self, bird):
-        for pipe in self.pipes: # loop through pipes and if a collision is detected returns state
+        for pipe in self.pipes:  # loop through pipes and if a collision is detected returns state
             if pipe.check_collision(bird):
                 return True  # Collision detected
         return False  # No collision
 
     def check_score(self, bird):
         score_update = 0
-        for pipe in self.pipes: # loops through pipes and if the bird passed the pipe it will counted
+        for pipe in self.pipes:  # loops through pipes and if the bird passed the pipe it will be counted
             if bird.pos.x > pipe.pos.x and not pipe.passed:
                 pipe.passed = True
-                score_update += 1 # score will be incremented
+                score_update += 5 if pipe.is_golden else 1  # golden pipe bonus
         return score_update
