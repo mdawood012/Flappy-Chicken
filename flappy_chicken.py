@@ -50,6 +50,7 @@ class Interaction:
         self.background = background
         self.pipe_manager = PipeManager(WIDTH, HEIGHT, spawn_interval=90, speed=3) # initializes pipe manager
         self.score = 0
+        self.high_score = 0
         self.game_state = "start" # variable which tracks what mode of game were in
         self.counter = 0
         self.powerups_list = []
@@ -76,7 +77,10 @@ class Interaction:
                 if self.bird.health <= 0:
                     GAME_OVER_S.play()
                     self.game_state = "over"
+                    if self.score > self.high_score:
+                        self.high_score = self.score
                     self.background.set_final_score(self.score)
+                    self.background.set_high_score(self.high_score)
             elif not self.pipe_manager.check_collisions(self.bird):
                 self.collision_processed = False
 
@@ -84,7 +88,10 @@ class Interaction:
             if self.bird.pos.y >= GROUND_LEVEL:
                 GAME_OVER_S.play()
                 self.game_state = "over"
+                if self.score > self.high_score:
+                        self.high_score = self.score
                 self.background.set_final_score(self.score)
+                self.background.set_high_score(self.high_score)
 
             #methods to add and remove the powerups
 

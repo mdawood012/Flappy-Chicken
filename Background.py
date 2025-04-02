@@ -16,9 +16,14 @@ class Background:
         self.start_button = Button(290,335,100,40)
         self.restart_button = Button(290,335,100,40)
         self.final_score = 0
+        self.high_score = 0 
 
     def set_final_score(self,score):
-        self.final_score = score    
+        self.final_score = score 
+
+    def set_high_score(self, score):
+        self.high_score = score 
+      
     def update(self):
         self.background_scroll = (self.background_scroll + self.speed) % self.bg_width
     def draw(self, canvas, game_state):
@@ -56,5 +61,5 @@ class Background:
             canvas.draw_text("Game Over",(220,200),50,"Black")
             canvas.draw_text("Score",(250, 250), 25,"Black")
             canvas.draw_text("High Score",(250, 290), 25,"Black")
-            score = str(self.final_score)
-            canvas.draw_text(score,(380,250),25,"Black")
+            canvas.draw_text(str(self.final_score), (380, 250), 25, "Black")
+            canvas.draw_text(str(self.high_score), (400, 290), 25, "Black")
