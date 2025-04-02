@@ -11,12 +11,16 @@ class Pipes:
         self.pipe_width = pipe_width
         self.gap = pipe_gap  # gap between top and bottom
         self.speed = Vector(-speed, 0)  # movement speed of pipe
+        self.vertical_speed = 3
+        self.vertical_direction = 1
 
         # Randomize the gap position (where the opening is)
         self.pos = Vector(self.width + self.pipe_width / 2, 0)
 
         # randomize the gap position
         self.set_random_gap()
+
+        self.minimum_distance = 80
 
         # Pipe Colors
         self.pipe_color = "Green"
@@ -27,10 +31,10 @@ class Pipes:
 
     def set_random_gap(self):
         # minimum distance from top and bottom of the screen
-        min_distance = 80
         # calculates the center of gap
-        min_val = int(min_distance + self.gap / 2)
-        max_val = int(self.height - min_distance - self.gap / 2)
+        minimum_distance =80
+        min_val = int(minimum_distance + self.gap / 2)
+        max_val = int(self.height - minimum_distance- self.gap / 2)
 
         # ensures min value is greater than max value
         if min_val >= max_val:
@@ -45,8 +49,19 @@ class Pipes:
     def update(self):
         # moves pipe to the left
         self.pos.add(self.speed)
+
+        #we got to add the speed until we are less or greater than the gap center 
+        self.gap_center += self.vertical_speed * self.vertical_direction
+
+        if self.gap_center - self.gap / 2 <= self.minimum_distance or self.gap_center + self.gap / 2 >= self.height - self.minimum_distance:
+            self.vertical_direction *= -1
+
+        #recalculate the distance. 
+        self.gap_top = self.gap_center - self.gap / 2
+        self.gap_bottom = self.gap_center + self.gap / 2
         # returns true if pipe is off the screen
         return self.pos.x < -self.pipe_width / 2
+    
 
     def draw(self, canvas):
         # draw top pipe
