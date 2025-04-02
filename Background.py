@@ -62,4 +62,4 @@ class Background:
             canvas.draw_text("Score",(250, 250), 25,"Black")
             canvas.draw_text("High Score",(250, 290), 25,"Black")
             canvas.draw_text(str(self.final_score), (380, 250), 25, "Black")
-            canvas.draw_text(str(self.high_score), (400, 290), 25, "Black")
+            canvas.draw_text(str(self.high_score), (380, 290), 25, "Black")
